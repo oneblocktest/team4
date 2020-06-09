@@ -51,7 +51,7 @@ decl_event!(
 		//SomethingStored(u32, AccountId),
 		ClaimCreated(AccountId, Vec<u8>),
 		ClaimRevoked(AccountId, Vec<u8>),
-		transferclaim(AccountId,AccountId,Vec<u8>),
+		Claimtransfer(AccountId,AccountId,Vec<u8>),
 	}
 );
 
@@ -163,7 +163,7 @@ decl_module! {
         }
 		
 		#[weight = 10_000]
-		 fn transferclaim(origin, send_to: T::AccountId ,claim: Vec<u8>) -> dispatch::DispatchResult {
+		 fn Claimtransfer(origin, send_to: T::AccountId ,claim: Vec<u8>) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
 			ensure!(claim.len() <= 1, Error::<T>::ProofTooLong);
 			ensure!(Proofs::<T>::contains_key(&claim),Error::<T>::ClaimNotExist);
