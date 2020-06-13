@@ -51,7 +51,7 @@ decl_event!(
 		//SomethingStored(u32, AccountId),
 		ClaimCreated(AccountId, Vec<u8>),
 		ClaimRevoked(AccountId, Vec<u8>),
-		Claimtransfer(AccountId,AccountId,Vec<u8>),
+		ClaimTransfer(AccountId,AccountId,Vec<u8>),
 	}
 );
 
@@ -163,16 +163,19 @@ decl_module! {
         }
 		
 		#[weight = 10_000]
-		 fn Claimtransfer(origin, send_to: T::AccountId ,claim: Vec<u8>) -> dispatch::DispatchResult {
+		pub fn ClaimTransfer(origin, claim: Vec<u8>, dest: <T::Lookup as StaticLookup>::Source) -> dispatch::DispatchResult {
 			let sender = ensure_signed(origin)?;
-			ensure!(claim.len() <= 1, Error::<T>::ProofTooLong);
-			ensure!(Proofs::<T>::contains_key(&claim),Error::<T>::ClaimNotExist);
+
+			ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::ClaimNotExist);
+
 			let (owner, _block_number) = Proofs::<T>::get(&claim);
+
 			ensure!(owner == sender, Error::<T>::NotClaimOwner);
-			ensure!(owner != send_to, Error::<T>::SameClaimOwner);
-			Proofs::<T>::remove(&claim);
-			Proofs::<T>::insert(&claim, (send_to.clone(), system::Module::<T>::block_number()));
-			Self::deposit_event(RawEvent::ClaimRevoked(sender, claim));
+
+			let dest = T::Lookup::lookup(dest)?;
+
+			Proofs::<T>::insert(&claim, (dest, system::Module::<T>::block_number()));
+
 			Ok(())
 		}
 
