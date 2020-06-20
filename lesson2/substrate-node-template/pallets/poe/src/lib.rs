@@ -51,7 +51,7 @@ decl_event!(
 		//SomethingStored(u32, AccountId),
 		ClaimCreated(AccountId, Vec<u8>),
 		ClaimRevoked(AccountId, Vec<u8>),
-		ClaimTransfer(AccountId,AccountId,Vec<u8>),
+		ClaimTransfered(AccountId,AccountId,Vec<u8>),
 	}
 );
 
